@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from urllib.parse import urljoin 
 
 def main():
     print("Iniciando script de scraping...")
@@ -24,7 +25,9 @@ def main():
         # Extraer título y URL del mismo elemento
         titulo = enlace.get_attribute("title")
         url_relativa = enlace.get_attribute("href")
-        url_completa = "http://books.toscrape.com/" + url_relativa #Solucion al bug con la url 
+        
+        # urljoin para evitar duplicados 
+        url_completa = urljoin(base_url, url_relativa)
         
         # Extraer el precio
         precio = libro.find_element(By.CLASS_NAME, "price_color").text
