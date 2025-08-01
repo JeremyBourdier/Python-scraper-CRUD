@@ -10,23 +10,27 @@ def main():
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
 
-    # Navegamos al sitio de práctica
     url = "http://books.toscrape.com/"
     driver.get(url)
     print(f"Página abierta: {url}")
 
-    # Encontramos todos los libros. Cada uno es un <article> con la clase 'product_pod'.
     libros = driver.find_elements(By.CLASS_NAME, "product_pod")
-
-    print("\n--- Títulos de Libros Encontrados ---")
-    # Iteramos sobre cada libro para extraer su título
+    
+    print("\n--- Datos de Libros Encontrados ---")
     for libro in libros:
-        # El título está dentro de una etiqueta <h3>, dentro de una etiqueta <a>
+        # Extraer el título (como antes)
         titulo = libro.find_element(By.TAG_NAME, "h3").find_element(By.TAG_NAME, "a").get_attribute("title")
-        print(titulo)
+        
+        # NUEVO: Extraer el precio
+        # El precio está en un párrafo <p> con la clase 'price_color'
+        precio = libro.find_element(By.CLASS_NAME, "price_color").text
+        
+        # Imprimimos ambos datos
+        print(f"Título: {titulo} | Precio: {precio}")
+        
     print("-------------------------------------\n")
 
-    time.sleep(2) # Pequeña pausa
+    time.sleep(2)
     driver.quit()
     print("Script finalizado.")
 
