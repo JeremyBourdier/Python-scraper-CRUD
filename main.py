@@ -24,7 +24,7 @@ def main():
         # Extraer título y URL del mismo elemento
         titulo = enlace.get_attribute("title")
         url_relativa = enlace.get_attribute("href")
-        url_completa = base_url + url_relativa
+        url_completa = "http://books.toscrape.com/" + url_relativa #Solucion al bug con la url 
         
         # Extraer el precio
         precio = libro.find_element(By.CLASS_NAME, "price_color").text
