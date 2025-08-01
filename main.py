@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from urllib.parse import urljoin 
 
 def main():
     print("Iniciando script de scraping...")
@@ -10,25 +11,31 @@ def main():
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
 
-    url = "http://books.toscrape.com/"
-    driver.get(url)
-    print(f"Página abierta: {url}")
+    base_url = "http://books.toscrape.com/"
+    driver.get(base_url)
+    print(f"Página abierta: {base_url}")
 
     libros = driver.find_elements(By.CLASS_NAME, "product_pod")
     
-    print("\n--- Datos de Libros Encontrados ---")
+    print("\n--- Datos Completos de Libros Encontrados ---")
     for libro in libros:
-        # Extraer el título (como antes)
-        titulo = libro.find_element(By.TAG_NAME, "h3").find_element(By.TAG_NAME, "a").get_attribute("title")
+        # Elemento <a> que contiene tanto el título como la URL
+        enlace = libro.find_element(By.TAG_NAME, "h3").find_element(By.TAG_NAME, "a")
         
-        # NUEVO: Extraer el precio
-        # El precio está en un párrafo <p> con la clase 'price_color'
+        # Extraer título y URL del mismo elemento
+        titulo = enlace.get_attribute("title")
+        url_relativa = enlace.get_attribute("href")
+        
+        # urljoin para evitar duplicados 
+        url_completa = urljoin(base_url, url_relativa)
+        
+        # Extraer el precio
         precio = libro.find_element(By.CLASS_NAME, "price_color").text
         
-        # Imprimimos ambos datos
-        print(f"Título: {titulo} | Precio: {precio}")
+        # Imprimimos todos los datos
+        print(f"Título: {titulo} | Precio: {precio} | URL: {url_completa}")
         
-    print("-------------------------------------\n")
+    print("------------------------------------------\n")
 
     time.sleep(2)
     driver.quit()
