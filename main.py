@@ -4,9 +4,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urljoin 
+import database
 
 def main():
     print("Iniciando script de scraping...")
+    database.create_table()
 
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
