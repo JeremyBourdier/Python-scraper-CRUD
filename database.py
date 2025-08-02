@@ -5,14 +5,13 @@ DATABASE_NAME = "books.db"
 def get_db_connection():
     """Crea y retorna una conexión a la base de datos."""
     conn = sqlite3.connect(DATABASE_NAME)
-    conn.row_factory = sqlite3.Row # Permite acceder a las columnas por nombre
+    conn.row_factory = sqlite3.Row
     return conn
 
 def create_table():
     """Crea la tabla 'libros' si no existe."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS libros (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,7 +21,17 @@ def create_table():
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
-    
     conn.commit()
     conn.close()
     print("Tabla 'libros' verificada/creada exitosamente.")
+
+def add_book(cursor, titulo, precio, url):
+    """Añade un nuevo libro usando un cursor existente."""
+    try:
+        cursor.execute(
+            "INSERT INTO libros (titulo, precio, url) VALUES (?, ?, ?)",
+            (titulo, precio, url)
+        )
+        print(f"Libro preparado para añadir: {titulo}")
+    except sqlite3.IntegrityError:
+        print(f"El libro ya existe en la base de datos: {titulo}")
