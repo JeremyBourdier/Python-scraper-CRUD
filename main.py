@@ -1,5 +1,5 @@
 import time
-import argparse #Para manejar argumentos de la terminal
+import argparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
@@ -42,35 +42,33 @@ def list_books():
         print("No hay libros en la base de datos.")
     else:
         for libro in libros:
-            # Mostramos tambien el estado
             print(f"ID: {dict(libro)['id']}, Título: {dict(libro)['titulo']}, Precio: {dict(libro)['precio']}, Estado: {dict(libro)['estado']}")
     print("------------------------------------------\n")
-
 
 def main():
     database.create_table()
     
-    # Define todos los comandos que el script puede recibir
     parser = argparse.ArgumentParser(description="Scraper y gestor de libros.")
-    parser.add_argument("--listar", action="store_true", help="Lista los libros guardados.")
     
-    # Comandos para actualizar y borrar por ID
+    
+    parser.add_argument("--scrape", action="store_true", help="Ejecuta el scraper para añadir nuevos libros.")
+    parser.add_argument("--listar", action="store_true", help="Lista los libros guardados.")
     parser.add_argument("--actualizar", type=int, help="ID del libro a actualizar.")
     parser.add_argument("--estado", type=str, default="Leído", help="Nuevo estado para el libro.")
     parser.add_argument("--borrar", type=int, help="ID del libro a borrar.")
     
     args = parser.parse_args()
-
-    # Decide qué hacer según el comando
-    if args.listar:
+#El scraper se ejecuta si se pasa el argumento --scrape
+    if args.scrape:
+        scrape_books()
+    elif args.listar:
         list_books()
     elif args.actualizar:
         database.update_book_status(args.actualizar, args.estado)
     elif args.borrar:
         database.delete_book(args.borrar)
     else:
-        print("Por favor, especifica una acción: --listar, --actualizar <ID>, o --borrar <ID>.")
-
+        print("Por favor, especifica una acción: --scrape, --listar, --actualizar <ID>, o --borrar <ID>.")
 
 if __name__ == "__main__":
     main()

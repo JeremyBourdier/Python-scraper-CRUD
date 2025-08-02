@@ -12,15 +12,25 @@ def create_table():
     """Crea la tabla 'libros' si no existe."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute('''
+
+    # Comando SQL en una variable
+    sql_crear_tabla = '''
         CREATE TABLE IF NOT EXISTS libros (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT NOT NULL,
             precio TEXT NOT NULL,
             url TEXT NOT NULL UNIQUE,
+            estado TEXT NOT NULL DEFAULT 'Pendiente',
             fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-    ''')
+    '''
+
+    print("--- Ejecutando la siguiente instrucción SQL: ---")
+    print(sql_crear_tabla)
+    print("---------------------------------------------")
+
+    cursor.execute(sql_crear_tabla)
+
     conn.commit()
     conn.close()
     print("Tabla 'libros' verificada/creada exitosamente.")
