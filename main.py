@@ -35,33 +35,41 @@ def scrape_books():
     print("Scraping y guardado finalizados.")
 
 def list_books():
-    """Función para listar los libros desde la BD."""
+    """Muestra todos los libros guardados en la base de datos."""
     print("\n--- Libros Guardados en la Base de Datos ---")
     libros = database.get_all_books()
     if not libros:
         print("No hay libros en la base de datos.")
     else:
         for libro in libros:
-            # dict(libro) convierte la fila de la BD en un diccionario
-            print(f"ID: {dict(libro)['id']}, Título: {dict(libro)['titulo']}, Precio: {dict(libro)['precio']}")
+            # Mostramos tambien el estado
+            print(f"ID: {dict(libro)['id']}, Título: {dict(libro)['titulo']}, Precio: {dict(libro)['precio']}, Estado: {dict(libro)['estado']}")
     print("------------------------------------------\n")
 
 
 def main():
     database.create_table()
     
-    # Lógica para decidir qué acción tomar
+    # Define todos los comandos que el script puede recibir
     parser = argparse.ArgumentParser(description="Scraper y gestor de libros.")
-    parser.add_argument("--scrape", action="store_true", help="Ejecuta el scraper para buscar y guardar nuevos libros.")
-    parser.add_argument("--listar", action="store_true", help="Lista los libros guardados en la base de datos.")
+    parser.add_argument("--listar", action="store_true", help="Lista los libros guardados.")
+    
+    # Comandos para actualizar y borrar por ID
+    parser.add_argument("--actualizar", type=int, help="ID del libro a actualizar.")
+    parser.add_argument("--estado", type=str, default="Leído", help="Nuevo estado para el libro.")
+    parser.add_argument("--borrar", type=int, help="ID del libro a borrar.")
+    
     args = parser.parse_args()
 
-    if args.scrape:
-        scrape_books()
-    elif args.listar:
+    # Decide qué hacer según el comando
+    if args.listar:
         list_books()
+    elif args.actualizar:
+        database.update_book_status(args.actualizar, args.estado)
+    elif args.borrar:
+        database.delete_book(args.borrar)
     else:
-        print("Por favor, especifica una acción: --scrape o --listar")
+        print("Por favor, especifica una acción: --listar, --actualizar <ID>, o --borrar <ID>.")
 
 
 if __name__ == "__main__":

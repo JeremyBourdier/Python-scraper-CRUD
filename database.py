@@ -44,3 +44,28 @@ def get_all_books():
     libros = cursor.fetchall()
     conn.close()
     return libros
+
+def update_book_status(id, estado):
+    """Actualiza el estado de un libro por su ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE libros SET estado = ? WHERE id = ?", (estado, id))
+    conn.commit()
+    # rowcount nos dice cuántas filas fueron afectadas.
+    if cursor.rowcount == 0:
+        print(f"Error: No se encontró ningún libro con el ID {id}.")
+    else:
+        print(f"Libro con ID {id} actualizado al estado '{estado}'.")
+    conn.close()
+
+def delete_book(id):
+    """Borra un libro por su ID."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM libros WHERE id = ?", (id,))
+    conn.commit()
+    if cursor.rowcount == 0:
+        print(f"Error: No se encontró ningún libro con el ID {id}.")
+    else:
+        print(f"Libro con ID {id} ha sido borrado.")
+    conn.close()
