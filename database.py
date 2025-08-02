@@ -35,3 +35,12 @@ def add_book(cursor, titulo, precio, url):
         print(f"Libro preparado para añadir: {titulo}")
     except sqlite3.IntegrityError:
         print(f"El libro ya existe en la base de datos: {titulo}")
+        
+def get_all_books():
+    """Recupera todos los libros de la base de datos."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM libros ORDER BY id DESC")
+    libros = cursor.fetchall()
+    conn.close()
+    return libros
