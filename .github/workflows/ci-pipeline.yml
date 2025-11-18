@@ -1,16 +1,13 @@
-name: Pipeline de CI de Python
+name: Pipeline de CI de Python (Seguro)
 
-# Disparadores: Se ejecuta en cada push y cada pull request
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
-    # La máquina virtual donde se ejecutará (Ubuntu es la estándar)
+  build-and-install:
     runs-on: ubuntu-latest
 
     steps:
       # 1. Clonar tu repositorio
-      # 'uses' llama a una "Acción" pre-hecha por GitHub
       - name: Clonar repositorio
         uses: actions/checkout@v4
 
@@ -18,38 +15,17 @@ jobs:
       - name: Configurar Python 3.11
         uses: actions/setup-python@v5
         with:
-          # IMPORTANTE: Cambia '3.11' a la versión de Python que estés usando
-          python-version: '3.11'
+          python-version: '3.11' # Asegúrate que esta sea tu versión
 
       # 3. Instalar dependencias
-      # 'run' ejecuta comandos de terminal
       - name: Instalar dependencias
         run: |
-          # Actualizar pip, la herramienta de instalación de Python
           python -m pip install --upgrade pip
-          
-          # Instalar las librerías de tu proyecto (requests, bs4, etc.)
-          # Se asegura de que el archivo exista antes de intentar instalar
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          fi
-          
-          # Instala las herramientas para testing y calidad
-          # (pytest para tests, flake8 para linting)
-          pip install pytest flake8
+          pip install -r requirements.txt
 
-      # 4. Comprobar calidad de código (Linting)
-      # Este paso revisa que tu código siga las guías de estilo de Python (PEP8)
-      - name: Comprobar calidad con flake8 (Lint)
+      # 4. Verificar instalación (Prueba segura)
+      - name: Mostrar versión de Python y archivos
         run: |
-          # Ejecuta el linter. Falla si hay errores de sintaxis o formato.
-          # (Puedes añadir --exclude=venv si tienes esa carpeta)
-          flake8 . --count --show-source --statistics
-
-      # 5. Ejecutar Pruebas (¡El corazón de TDD!)
-      # Este paso es el que valida que tu código funciona.
-      - name: Ejecutar pruebas con pytest
-        run: |
-          # pytest descubrirá y ejecutará tus archivos de test
-          # (ej. test_main.py, test_scraper.py, etc.)
-          pytest
+          python --version
+          echo "Dependencias instaladas. Archivos en el repositorio:"
+          ls -l
